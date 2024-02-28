@@ -1,0 +1,413 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    #regForm {
+        background-color: #ffffff;
+        margin: 70px auto;
+        margin-top: 0px;
+        padding: 20px;
+        width: 70%;
+        min-width: 300px;
+    }
+
+    input {
+        padding: 10px;
+        width: 100%;
+        border: 1px solid #aaaaaa;
+    }
+
+    input.invalid {
+        background-color: #ffdddd;
+    }
+
+    .tab {
+        display: none;
+    }
+
+    button {
+        background-color: #00204d;
+        color: #ffffff;
+        border: none;
+        padding: 10px 20px;
+        font-size: 17px;
+        cursor: pointer;
+        border-radius: 20px;
+    }
+
+    button:hover {
+        opacity: 0.8;
+    }
+
+    #prevBtn {
+        background-color: #bbbbbb;
+    }
+
+    .step {
+        height: 15px;
+        width: 15px;
+        margin: 0 2px;
+        background-color: #bbbbbb;
+        border: none;
+        border-radius: 50%;
+        display: inline-block;
+        opacity: 0.5;
+    }
+
+    .step.active {
+        opacity: 1;
+        background-color: #00204d;
+    }
+
+    .step.finish {
+        background-color: #00204d;
+    }
+
+    label {
+        margin-bottom: 10px;
+        margin-top: 10px;
+        font-weight: bold;
+    }
+
+    select {
+        font-size: 16px;
+        font-family: Futura, "Trebuchet MS", Arial, sans-serif;
+    }
+
+    .tab label,
+    .tab input,
+    .tab select {
+        margin-bottom: 10px;
+    }
+</style>
+
+<form id="regForm" action="AutomationTask">
+    <h1 style="text-align: center;">Create Automation Tasks <span class="info-link"><a href="#"> info</a></span></h1>
+    <br>
+    <hr>
+    <br>
+    <!-- Step 1 -->
+    <div class="tab">
+        <label for="name">Name</label>
+        <p><input type="text" id="name" name="name" placeholder="Enter campaign name" oninput="this.className = ''"></p>
+        <br>
+        <label for="service">Service</label>
+        <p>
+            <select id="service" name="service" oninput="this.className = ''">
+                <option value="service1">Service 1</option>
+                <option value="service2">Service 2</option>
+                <!-- Add more options as needed -->
+            </select>
+        </p>
+
+        <div class="select-container">
+            <label for="devices">Devices</label>
+
+            <div>
+                <select id="devices" name="devices[]" multiple oninput="this.className = ''">
+                    <option value="device1">Device 1</option>
+                    <option value="device2">Device 2</option>
+                    <option value="chosenDevice1">Chosen Device 1</option>
+                    <option value="chosenDevice2">Chosen Device 2</option>
+                    <!-- Add more options as needed -->
+                </select>
+            </div>
+        </div>
+    </div>
+    <!-- End Step 1 -->
+    <!-- Step 2 -->
+    <div class="tab">
+        <div class="select-container">
+            <label for="childbots">Childbots</label>
+
+            <div>
+                <select id="childbots" name="childbots[]" multiple oninput="this.className = ''">
+                    <option value="childbot1">Childbot 1</option>
+                    <option value="childbot2">Childbot 2</option>
+                    <option value="chosenChildbot1">Chosen Childbot 1</option>
+                    <option value="chosenChildbot2">Chosen Childbot 2</option>
+                    <!-- Add more options as needed -->
+                </select>
+            </div>
+        </div>
+    </div>
+    <!-- End Step 2 -->
+    <!-- Step 3 -->
+    <div class="tab">
+        <div class="select-container">
+            <label for="proxies">Proxies</label>
+
+            <div>
+                <select id="proxies" name="proxies[]" multiple>
+                    <option value="proxy1">Proxy 1</option>
+                    <option value="proxy2">Proxy 2</option>
+                    <option value="chosenProxy1">Chosen Proxy 1</option>
+                    <option value="chosenProxy2">Chosen Proxy 2</option>
+                    <!-- Add more options as needed -->
+                </select>
+            </div>
+        </div>
+    </div>
+    <!-- End Step 3 -->
+    <!-- Step 4 -->
+    <div class="tab">
+        <input style="width: 15px; height: 15px;" type="checkbox" id="proxyDisable" name="proxyDisable">
+        <label for="proxyDisable">Proxy Disable</label>
+        <br><br>
+
+        <input style="width: 15px; height: 15px;" type="checkbox" id="localStore" name="localStore"
+            oninput="this.className = ''">
+        <label for="localStore">Local Store</label>
+
+        <br>
+        <div class="select-container">
+            <label for="messaging">Messaging</label>
+
+            <div>
+                <select id="messaging" name="messaging[]" multiple>
+                    <option value="messaging1">Messaging 1</option>
+                    <option value="messaging2">Messaging 2</option>
+                    <option value="chosenMessaging1">Chosen Messaging 1</option>
+                    <option value="chosenMessaging2">Chosen Messaging 2</option>
+                    <!-- Add more options as needed -->
+                </select>
+            </div>
+        </div>
+        <div class="select-container">
+            <label for="sharing">Sharing</label>
+
+            <div>
+                <select id="sharing" name="sharing[]" multiple oninput="this.className = ''">
+                    <option value="sharing1">Sharing 1</option>
+                    <option value="sharing2">Sharing 2</option>
+                    <option value="chosenSharing1">Chosen Sharing 1</option>
+                    <option value="chosenSharing2">Chosen Sharing 2</option>
+                    <!-- Add more options as needed -->
+                </select>
+            </div>
+        </div>
+    </div>
+    <!-- End Step 4 -->
+    <!-- Step 5 -->
+    <div class="tab">
+        <div class="select-container">
+            <label for="demographic">Demographic</label>
+
+            <div>
+                <select id="demographic" name="demographic[]" multiple oninput="this.className = ''">
+                    <option value="demographic1">Demographic 1</option>
+                    <option value="demographic2">Demographic 2</option>
+                    <option value="chosenDemographic1">Chosen Demographic 1</option>
+                    <option value="chosenDemographic2">Chosen Demographic 2</option>
+                    <!-- Add more options as needed -->
+                </select>
+            </div>
+        </div>
+
+        <div class="select-container">
+            <label for="scrapeTasks">Scrape Tasks</label>
+
+            <div>
+                <select id="scrapeTasks" name="scrapeTasks[]" multiple oninput="this.className = ''">
+                    <option value="scrapeTask1">Scrape Task 1</option>
+                    <option value="scrapeTask2">Scrape Task 2</option>
+                    <option value="chosenScrapeTask1">Chosen Scrape Task 1</option>
+                    <option value="chosenScrapeTask2">Chosen Scrape Task 2</option>
+                    <!-- Add more options as needed -->
+                </select>
+            </div>
+        </div>
+    </div>
+    <!-- End Step 5 -->
+    <!-- Step 6 -->
+    <div class="tab">
+        <!-- Content for Step 6 -->
+        <label for="customer">Customer</label>
+        <select id="customer" name="customer">
+            <option value="customer1">Customer 1</option>
+            <option value="customer2">Customer 2</option>
+            <!-- Add more options as needed -->
+        </select>
+
+        <label for="os">OS</label>
+        <select id="os" name="os">
+            <option value="os1">OS 1</option>
+            <option value="os2">OS 2</option>
+            <!-- Add more options as needed -->
+        </select>
+
+        <div class="select-container">
+            <label for="settings">Settings</label>
+
+            <select id="combinedSettings" name="combinedSettings[]" multiple>
+                <option value="settings1">Settings 1</option>
+                <option value="settings2">Settings 2</option>
+                <option value="chosenSettings1">Chosen Settings 1</option>
+                <option value="chosenSettings2">Chosen Settings 2</option>
+                <!-- Add more options as needed -->
+            </select>
+        </div>
+    </div>
+    <!-- End Step 6 -->
+    <!-- Step 7 -->
+    <div class="tab">
+        <!-- Content for Step 7 -->
+        <label for="activity">Activity to Perform</label>
+        <input type="text" id="activity" name="activity" placeholder="like, follow, comment">
+
+        <br><br>
+        <label for="server">Server</label>
+        <select id="server" name="server">
+            <option value="server1">Server 1</option>
+            <option value="server2">Server 2</option>
+            <!-- Add more options as needed -->
+        </select>
+        <br><br>
+        <label for="blacklist">Blacklist</label>
+        <input type="text" id="blacklist" name="blacklist">
+        <br><br>
+        <label for="requiredInteractions">Required Interactions</label>
+        <input type="number" id="requiredInteractions" name="requiredInteractions">
+    </div>
+    <!-- End Step 7 -->
+    <!-- Step 8 -->
+    <div class="tab">
+        <!-- Content for Step 8 -->
+        <label for="launchDatetime">Launch Datetime</label>
+        <input type="datetime-local" id="launchDatetime" name="launchDatetime">
+        <br><br>
+        <label for="stopDatetime">Stop Datetime</label>
+        <input type="datetime-local" id="stopDatetime" name="stopDatetime">
+        <br><br>
+        <label for="internalState">Internal State</label>
+        <select id="internalState" name="internalState">
+            <option value="state1">State 1</option>
+            <option value="state2">State 2</option>
+            <!-- Add more options as needed -->
+        </select>
+        <br><br>
+        <label for="campaignState">Campaign State</label>
+        <select id="campaignState" name="campaignState">
+            <option value="campaignState1">Campaign State 1</option>
+            <option value="campaignState2">Campaign State 2</option>
+            <!-- Add more options as needed -->
+        </select>
+    </div>
+    <!-- End Step 8 -->
+    <!-- Step 9 -->
+    <div class="tab">
+        <!-- Content for Step 9 -->
+        <input style="width: 15px; height: 15px;" type="checkbox" id="isCompleted" name="isCompleted">
+        <label for="isCompleted">Is Completed</label>
+        <br><br>
+
+        <input style="width: 15px; height: 15px;" type="checkbox" id="isDeleted" name="isDeleted">
+        <label for="isDeleted">Is Deleted</label>
+        <br><br>
+
+        <label for="mediaID">Media ID</label>
+        <input type="text" id="mediaID" name="mediaID">
+        <br>
+
+        <label for="commentID">Comment ID</label>
+        <input type="text" id="commentID" name="commentID">
+    </div>
+    <!-- End Step 9 -->
+    <div class="tab">
+        <p style="margin-top: 7%;text-align: center; color: #00204d; font-weight: bold; background-color: #ffffff; width: 884px; height: 200.6px; font-size: 20px; margin-left:3%;">Please review your entries one more time by clicking "Previous",<br> and then click "Submit" to complete the form.</p>
+    </div>
+    <!-- Success Message -->
+    <div id="successMessage"
+        style="display: none; text-align: center; color: #00204d; font-weight: bold; background-color: #ffffff; width: 884px; height: 293.6px; font-size: 26px; margin-left: 3%;">
+        <br><br><br><br>
+        Automation Task Created Successfully!
+    </div>
+
+
+
+    <div style="overflow:auto;">
+        <div style="float:right;">
+            <button type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
+            <button type="button" id="nextBtn" onclick="nextPrev(1)">Next</button>
+        </div>
+    </div>
+    <div style="text-align:center;margin-top:40px;">
+        <span class="step"></span>
+        <span class="step"></span>
+        <span class="step"></span>
+        <span class="step"></span>
+        <span class="step"></span>
+        <span class="step"></span>
+        <span class="step"></span>
+        <span class="step"></span>
+        <span class="step"></span>
+        <span class="step"></span>
+    </div>
+</form>
+
+<script>
+    var currentTab = 0;
+    showTab(currentTab);
+
+    function showTab(n) {
+        var x = document.getElementsByClassName("tab");
+        x[n].style.display = "block";
+
+        if (n == 0) {
+            document.getElementById("prevBtn").style.display = "none";
+        } else {
+            document.getElementById("prevBtn").style.display = "inline";
+        }
+        if (n == (x.length - 1)) {
+            document.getElementById("nextBtn").innerHTML = "Submit";
+        } else {
+            document.getElementById("nextBtn").innerHTML = "Next";
+        }
+        fixStepIndicator(n)
+    }
+
+    function nextPrev(n) {
+        var x = document.getElementsByClassName("tab");
+        if (n == 1 && !validateForm()) return false;
+        x[currentTab].style.display = "none";
+        currentTab = currentTab + n;
+        if (currentTab >= x.length) {
+            document.getElementById("regForm").submit();
+            document.getElementById("successMessage").style.display = "block";
+            setTimeout(function () {
+                document.getElementById("successMessage").style.display = "none";
+            }, 100000);
+            return false;
+        }
+        showTab(currentTab);
+    }
+
+    function validateForm() {
+        var x, y, i, valid = true;
+        x = document.getElementsByClassName("tab");
+        y = x[currentTab].getElementsByTagName("input");
+        for (i = 0; i < y.length; i++) {
+            if (y[i].value == "") {
+                y[i].className += " invalid";
+                valid = false;
+            }
+        }
+        if (valid) {
+            document.getElementsByClassName("step")[currentTab].className += " finish";
+        }
+        return valid;
+    }
+
+    function fixStepIndicator(n) {
+        var i, x = document.getElementsByClassName("step");
+        for (i = 0; i < x.length; i++) {
+            x[i].className = x[i].className.replace(" active", "");
+        }
+        x[n].className += " active";
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="header-container">
+    <h1>
+        Profile
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+    <a style="margin-left: 65%;" href="add_automation_profile"> 
+        <button class="generate-report-btn">
+            <i class='bx bxs-download'></i> Export Profiles
+        </button>
+    </a>
+
+    <a href="add_automation_profile"> 
+    <button class="generate-report-btn">
+        <i class='bx bxs-download'></i> Import Profiles
+    </button>
+    </a>
+</div>
+<!-- 
+<div id="proxy-container">
+    <div style="padding: 15px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+
+        <div style="margin-top: 10px;" id="filters">
+            <select id="type-filter" onchange="applyFilters()">
+                <option value="">Type to filter</option>
+                <option value="HTTP">HTTP</option>
+                <option value="HTTPS">HTTPS</option>
+            </select>
+
+            <select id="status-filter" onchange="applyFilters()">
+                <option value="" style="color: dee2e6;">Press 'Enter' to search</option>
+                <option value="true">Blacklisted</option>
+                <option value="false">Not Blacklisted</option>
+            </select>
+            <span class="icon-container" onclick="toggleColumnSelection()">
+                <i class='bx bxs-cog custom-icon'></i>
+            </span>
+        </div>
+    </div>
+</div>
+-->
+
+<table class="device-details-table" id="myTable">
+    <thead>
+        <tr>
+            <th data-column="username">Username</th>
+            <th data-column="service">Service</th>
+            <th data-column="state">State</th>
+            <th data-column="followers">Followers</th>
+            <th data-column="post_count">Posts</th>
+            <th data-column="following">Following</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for profile in profiles %}
+            <tr>
+                <td>{{ profile.username }}</td>
+                <td>{{ profile.service }}</td>
+                <td>{{ profile.state }}</td>
+                <td>{{ profile.followers }}</td>
+                <td>{{ profile.post_count }}</td>
+                <td>{{ profile.following }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div id="columnModal" style="display: none; width: 50%; height:60%; margin-top: 3.3%;">
+    <div style="text-align: right; margin-bottom: 10px;">
+        <span style="cursor: pointer; color:blue;" onclick="toggleColumnSelection()">✖</span>
+    </div>
+
+    <h1 style="text-align: center;">
+        Profile Settings
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+    <br>
+    <hr>
+    <br>
+    <div class="checkbox-container">
+        <input type="checkbox" id="chkUsername" data-column="username" checked>
+        <label for="chkUsername">Username</label>
+    </div>
+    <div class="checkbox-container">
+        <input type="checkbox" id="chkService" data-column="service" checked>
+        <label for="chkService">Service</label>
+    </div>
+    <div class="checkbox-container">
+        <input type="checkbox" id="chkStatus" data-column="status" checked>
+        <label for="chkStatus">Status</label>
+    </div>
+    <div class="checkbox-container">
+        <input type="checkbox" id="chkInteractions" data-column="interactions" checked>
+        <label for="chkInteractions">Interactions</label>
+    </div>
+    <div class="checkbox-container">
+        <input type="checkbox" id="chkChallengeStatus" data-column="challenge_status" checked>
+        <label for="chkChallengeStatus">Challenge Status</label>
+    </div>
+    <div class="checkbox-container">
+        <input type="checkbox" id="chkTags" data-column="tags" checked>
+        <label for="chkTags">Tags</label>
+    </div>
+    <div class="checkbox-container">
+        <input type="checkbox" id="chkCampaign" data-column="campaign" checked>
+        <label for="chkCampaign">Campaign</label>
+    </div>
+    <div class="checkbox-container">
+        <input type="checkbox" id="chkBio" data-column="bio" checked>
+        <label for="chkBio">Bio</label>
+    </div>
+    <div class="checkbox-container">
+        <input type="checkbox" id="chkPosts" data-column="posts" checked>
+        <label for="chkPosts">Posts</label>
+    </div>
+    <div class="checkbox-container">
+        <input type="checkbox" id="chkFollowers" data-column="followers" checked>
+        <label for="chkFollowers">Followers</label>
+    </div>
+    <div class="checkbox-container">
+        <input type="checkbox" id="chkFollowing" data-column="following" checked>
+        <label for="chkFollowing">Following</label>
+    </div>
+    <button style="margin-left: 84%;background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; font-family: var(--font-family-sans-serif);" onclick="applyColumnSelection()">Apply</button>
+</div>
+<div class="pagination">
+    <span style="color: #5a5c69;">Pages</span>
+    <ul class="page-links">
+        {% if proxies.has_previous %}
+        <li><a href="?page=1">&laquo; first</a></li>
+        <li><a href="?page={{ proxies.previous_page_number }}">previous</a></li>
+        {% endif %}
+
+        {% for num in proxies.paginator.page_range %}
+        <li {% if num == proxies.number %}class="current-page"{% endif %}>
+            <a href="?page={{ num }}">{{ num }}</a>
+        </li>
+        {% endfor %}
+
+        {% if proxies.has_next %}
+        <li><a href="?page={{ proxies.next_page_number }}">next</a></li>
+        <li><a href="?page={{ proxies.paginator.num_pages }}">last &raquo;</a></li>
+        {% endif %}
+    </ul>
+
+    <div class="go-to">
+        <span style="color: #5a5c69;">Go to</span>
+        <input type="number" min="1" max="{{ proxies.paginator.num_pages }}" value="{{ proxies.number }}" oninput="goToPage(this.value)" />
+    </div>
+</div>
+</div>
+{% endblock %}

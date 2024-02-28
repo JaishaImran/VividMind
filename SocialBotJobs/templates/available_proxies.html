@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="header-container">
+    <h1>
+        Proxies
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+
+    <a style="margin-left: 65%;"> 
+        <button class="active-profile-btn">
+            Active Proxies <span class="notification-badge">{{ proxies|length }}</span>
+        </button>
+    </a>
+
+    <a> 
+        <button class="generate-report-btn">
+            <i class='bx bxs-download' onclick="exportProxies()"></i> Export All Proxies
+        </button>
+    </a>
+    <!-- 
+        <div style="margin-top: 10px;" id="filters">
+            <select id="type-filter" onchange="applyFilters()">
+                <option value="">Filter Type</option>
+                <option value="HTTP">HTTP</option>
+                <option value="HTTPS">HTTPS</option>
+            </select>
+
+            <select id="status-filter" onchange="applyFilters()">
+                <option value="" style="color: dee2e6;">Filter Proxy Status</option>
+                <option value="true">Blacklisted</option>
+                <option value="false">Not Blacklisted</option>
+            </select>
+        </div>
+    -->
+</div>
+
+<table class="proxy-details-table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>URL</th>
+            <th>Provider</th>
+            <th>Type</th>
+            <th>Current Usage Count</th>
+            <th>Blacklisted</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for proxies_instance in proxies %}
+        <tr class="proxy-row">
+            <td style="color: #5a5c69;">{{ proxies_instance.name }}</td>
+            <td style="color: #5a5c69;">{{ proxies_instance.url }}</td>
+            <td style="color: #5a5c69;">{{ proxies_instance.provider }}</td>
+            <td style="color: #5a5c69;">{{ proxies_instance.proxy_type }}</td>
+            <td style="color: #5a5c69;">{{ proxies_instance.current_usage_count }}</td>
+            <td style="color: #5a5c69;">{{ proxies_instance.blacklisted }}</td>
+            <td>
+                <a href="{% url 'delete_proxy' proxies_instance.id %}" class="delete-bot-btn"
+                    style="align-content: center;">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="pagination">
+    <span style="color: #5a5c69;">Pages</span>
+    <ul class="page-links">
+        {% if proxies.has_previous %}
+        <li><a href="?page=1">&laquo; first</a></li>
+        <li><a href="?page={{ proxies.previous_page_number }}">previous</a></li>
+        {% endif %}
+
+        {% for num in proxies.paginator.page_range %}
+        <li {% if num == proxies.number %}class="current-page"{% endif %}>
+            <a href="?page={{ num }}">{{ num }}</a>
+        </li>
+        {% endfor %}
+
+        {% if proxies.has_next %}
+        <li><a href="?page={{ proxies.next_page_number }}">next</a></li>
+        <li><a href="?page={{ proxies.paginator.num_pages }}">last &raquo;</a></li>
+        {% endif %}
+    </ul>
+
+    <div class="go-to">
+        <span style="color: #5a5c69;">Go to</span>
+        <input type="number" min="1" max="{{ proxies.paginator.num_pages }}" value="{{ proxies.number }}"
+            oninput="goToPage(this.value)" />
+    </div>
+</div>
+</div>
+{% endblock %}

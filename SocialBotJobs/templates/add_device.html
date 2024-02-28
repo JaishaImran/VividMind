@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var DeviceForm = document.querySelector("#DeviceForm");
+
+        DeviceForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            var formData = new FormData(DeviceForm);
+            formData.append('csrfmiddlewaretoken', document.getElementsByName('csrfmiddlewaretoken')[0].value);
+
+            console.log(Object.fromEntries(formData));
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "{% url 'add_device' %}", true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        console.log('Success:', xhr.responseText);
+                        window.location.href = "{% url 'available_devices' %}";
+                    } else {
+                        console.error('Error:', xhr.status, xhr.statusText);
+                    }
+                }
+            };
+
+            xhr.send(formData);
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var popupCloseButton = document.querySelector(".popup-close");
+        var addDevicePopup = document.getElementById("addDevicePopup");
+
+        popupCloseButton.addEventListener("click", function () {
+            closePopup(addDevicePopup);
+        });
+
+        function closePopup(popupElement) {
+            if (popupElement) {
+                popupElement.style.display = 'none';
+            }
+        }
+    });
+</script>
+
+<div class="header-container">
+    <h1>
+        Add New Devices
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+    <button class="generate-report-btn" onclick="openPopup('addDevicePopup')">
+        <i class='bx bx-plus-circle'></i> Upload Devices
+    </button>
+</div>
+<div class="settings-container">
+    <form method="post">
+        {% csrf_token %}
+        
+        <label for="id_action">Action</label>
+        <input type="text" name="action" id="id_action" required>
+    
+        <label for="id_spreadsheet_url">Spreadsheet URL</label>
+        <input type="text" name="spreadsheet_url" id="id_spreadsheet_url" required>
+    
+        <label for="id_resource_type">Resource Type</label>
+        <input type="text" name="resource_type" id="id_resource_type" required>
+    
+        <button type="submit">Submit</button>
+    </form>    
+</div>
+
+<div class="settings-container">
+    <div id="addDevicePopup" class="popup">
+        <div class="popup-content">
+            <span style="color: blue; font-size: 25px;" class="popup-close">&times;</span>
+            <h2>
+                Upload Devices
+                <span class="info-link">
+                    <a href="#">info</a>
+                </span>
+            </h2>
+            <br>
+            <hr>
+            <br>
+            <form method="post" action="{% url 'add_device_via_excel_sheet' %}">
+                {% csrf_token %}
+                <label for="google_sheets_url">Google Sheets URL</label>
+                <input type="text" name="google_sheets_url" required>
+                <button class="generate-report-btn" type="submit" name="add_proxies">Upload</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

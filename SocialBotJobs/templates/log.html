@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        function fetchLogEntries() {
+            fetch('https://1742-2400-adc5-491-1500-18bd-e7c3-5a81-a222.ngrok-free.app/api/reports/logs')  
+                .then(response => response.json())
+                .then(data => updateTable(data.log_entries))
+                .catch(error => console.error('Error fetching log entries:', error));
+        }
+
+        function updateTable(logEntries) {
+            const tbody = document.querySelector('.proxy-details-table tbody');
+
+            tbody.innerHTML = '';
+
+            logEntries.forEach(entry => {
+                const row = document.createElement('tr');
+            
+                const fields = ['id', 'profile', 'date', 'message', 'screenshot'];
+                fields.forEach(field => {
+                    const cell = document.createElement('td');
+                    cell.style.color = '#5a5c69';
+                    cell.textContent = entry[field];
+                    row.appendChild(cell);
+                });
+            
+                const deleteCell = document.createElement('td');
+                const deleteLink = document.createElement('a');
+                deleteLink.href = `/delete_proxy/${entry.id}/`; 
+                deleteLink.classList.add('delete-bot-btn');
+                deleteLink.textContent = 'Delete';
+                deleteLink.style.alignContent = 'center';
+                deleteCell.appendChild(deleteLink);
+                row.appendChild(deleteCell);
+            
+                tbody.appendChild(row);
+            });
+        }
+
+        fetchLogEntries();
+
+        setInterval(fetchLogEntries, 1000);
+    });
+</script>
+
+<div class="header-container">
+    <h1>
+        Log Entries
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+</div>
+
+<table class="proxy-details-table">
+    <thead>
+        <tr>
+            <th>Log ID</th>
+            <th>Profile</th>
+            <th>Date</th>
+            <th>Message</th>
+            <th>ScreenShot</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+    </tbody>
+</table>
+</div>
+{% endblock %}

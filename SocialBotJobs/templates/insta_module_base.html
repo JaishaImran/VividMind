@@ -1,0 +1,887 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="wrapper">
+    <h2>
+        <i class='bx bxl-instagram-alt'></i> INSTAGRAM Module
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h2>
+    <nav class="tabs" style="background: linear-gradient(to right, #002296, #8200bf, #c0007a, #ea0c5f, #ff5341, #ff8820, #f6ba00);">
+      <div class="selector"></div>
+      <a style="font-size: 14px;" href="#" id="manage-list-link" onclick="openManageListPopUp()"><i class="fab fa-superpowers"></i>MANAGE LISTS</a>
+      <a style="font-size: 14px;" href="#" id="manage-tasks-link" onclick="openManageTasksPopUp()"><i class="fa fa-thumb-tack"></i>TASK SETTINGS</a>
+      <a style="font-size: 14px;" href="#" id="manage-proxies-link" onclick="openManageProxiesPopUp()"><i class="fas fa-bolt"></i>MANAGE PROXIES</a>
+      <a style="font-size: 14px;" href="#" id="manage-acc-link" onclick="openManageAccPopUp()"><i class="fa fa-users"></i>MANAGE ACCOUNTS</a>
+      <a style="font-size: 14px;" href="#"><i class="fa fa-laptop"></i>ADD DEVICE</a>
+      <a style="font-size: 14px;" href="#" id="manage-device-link" onclick="openManageDevicePopUp()"><i class="fa fa-cube"></i>MANAGE DEVICE</a>
+      <a style="font-size: 14px;" href="#" onclick="openPoppyUp()"><i class="fa fa-tasks"></i>ASSIGN TASKS</a>
+    </nav>
+</div>
+<table class="device-details-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Accounts</th>
+            <th>Proxy</th>
+            <th>Device</th>
+            <th>DM</th>
+            <th>Video</th>
+            <th>Follows</th>
+            <th>Follower</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for devices_instance in devices %}
+        <tr class="device-row">
+            
+            <td style="color: #5a5c69;">{{ devices_instance.id }}</td>
+            <td style="color: #5a5c69;">{{ devices_instance.name }}</td>
+            <td style="color: #5a5c69;">{{ devices_instance.name }}</td>
+            <td style="color: #5a5c69;">{{ devices_instance.name }}</td>
+            <td style="color: #5a5c69;">{{ devices_instance.name }}</td>
+            <td style="color: #5a5c69;">{{ devices_instance.name }}</td>
+            <td style="color: #5a5c69;">{{ devices_instance.name }}</td>
+            <td style="color: #5a5c69;">{{ devices_instance.name }}</td>
+            <td style="color: #5a5c69;">{{ devices_instance.name }}</td>
+            <td>
+                <a href="{% url 'delete_device' devices_instance.id %}" class="delete-bot-btn"
+                    style="align-content: center;">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div class="pagination">
+    <span style="color: #5a5c69;">Pages</span>
+    <ul class="page-links">
+        {% if devices.has_previous %}
+        <li><a href="?page=1">&laquo; first</a></li>
+        <li><a href="?page={{ devices.previous_page_number }}">previous</a></li>
+        {% endif %}
+
+        {% for num in devices.paginator.page_range %}
+        <li {% if num == devices.number %}class="current-page"{% endif %}>
+            <a href="?page={{ num }}">{{ num }}</a>
+        </li>
+        {% endfor %}
+
+        {% if devices.has_next %}
+        <li><a href="?page={{ devices.next_page_number }}">next</a></li>
+        <li><a href="?page={{ devices.paginator.num_pages }}">last &raquo;</a></li>
+        {% endif %}
+    </ul>
+
+    <div class="go-to">
+        <span style="color: #5a5c69;">Go to</span>
+        <input type="number" min="1" max="{{ devices.paginator.num_pages }}" value="{{ devices.number }}"
+            oninput="goToPage(this.value)" />
+    </div>
+</div>
+</div>
+
+<div id="poppy-up" class="poppy-up-content" style="display: none; width: 50%; height:58%; margin-top: 43px;">
+    <div style="text-align: right; margin-bottom: 10px;">
+        <span style="cursor: pointer; color:blue;" onclick="closePoppyUp()">✖</span>
+    </div>
+
+    <h1 style="text-align: center;">
+        Tasks
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+    <div style="text-align: center; margin-top: 10px;">
+        <button style="width: 14%; background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; font-family: var(--font-family-sans-serif);" onclick="startTask()">Start</button>
+        <button style="width: 14%; background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; font-family: var(--font-family-sans-serif);" onclick="openSchedulerPopUp()">Scheduler</button>
+        <button style="width: 14%; background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; font-family: var(--font-family-sans-serif);" onclick="stopTask()">Stop</button>
+    </div>
+
+    <div class="checkbox-container">
+        <input type="checkbox" id="scrape" name="task" value="Scrape">
+        <label for="scrape">Scrape</label>
+    </div>
+    <div class="checkbox-container">
+        <input type="checkbox" id="follow" name="task" value="Follow">
+        <label for="follow">Follow</label>
+    </div>
+    <div class="checkbox-container">
+        <input type="checkbox" id="unfollow" name="task" value="Unfollow">
+        <label for="unfollow">Unfollow</label>
+    </div>
+    <div class="checkbox-container">
+        <input type="checkbox" id="dm" name="task" value="DM">
+        <label for="dm">DM</label>
+    </div>
+    <div class="checkbox-container">
+        <input type="checkbox" id="dv" name="task" value="DV">
+        <label for="dv">DV</label>
+    </div>
+    <div class="checkbox-container">
+        <input type="checkbox" id="favorite" name="task" value="Favorite">
+        <label for="favorite">Favorite</label>
+    </div>
+    <div class="checkbox-container">
+        <input type="checkbox" id="comment" name="task" value="Comment">
+        <label for="comment">Comment</label>
+    </div>
+    <div class="checkbox-container">
+        <input type="checkbox" id="repost" name="task" value="Repost">
+        <label for="repost">Repost</label>
+    </div>
+    <div class="checkbox-container">
+        <input type="checkbox" id="share" name="task" value="Share">
+        <label for="share">Share to Story</label>
+    </div>
+    <div class="checkbox-container">
+        <input type="checkbox" id="post" name="task" value="Post">
+        <label for="post">Post</label>
+    </div>
+    <button style="margin-left: 84%;background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; font-family: var(--font-family-sans-serif);" onclick="applyColumnSelection()">Apply</button>
+</div>
+
+<div id="manage-proxies-pop-up" class="poppy-up-content" style="display: none; width: 50%; height:53%; margin-top: 25px;">
+    <div style="text-align: right; margin-bottom: 10px;">
+        <span style="cursor: pointer; color:blue;" onclick="closeManageProxiesPopUp()">✖</span>
+    </div>
+    <h1 style="text-align: center;">
+        Manage Proxies
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+    <br>
+    <hr>
+    <br>
+    <div style="text-align: center; margin-top: 10px;">
+        <a href="{% url 'add_proxy' %}" style="text-decoration: none;">
+            <button style="background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; width: 25%; font-family: var(--font-family-sans-serif);">ADD PROXY LIST</button>
+        </a>
+        <br>
+
+        <a href="{% url 'available_proxies' %}" style="text-decoration: none;">
+            <button style="background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; width: 25%; font-family: var(--font-family-sans-serif);">VIEW ALL PROXIES</button>
+        </a>
+        <br>
+
+        <a href="{% url 'index2' %}" style="text-decoration: none;">
+            <button style="background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; width: 25%; font-family: var(--font-family-sans-serif);">ASSIGN PROXIES</button>
+        </a>
+        <br>
+
+        <a href="{% url 'index2' %}" style="text-decoration: none;">
+            <button style="background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; width: 25%; font-family: var(--font-family-sans-serif);">BLACKLISTED PROXIES</button>
+        </a>
+        <br>
+    </div>
+</div>
+
+<div id="manage-acc-pop-up" class="poppy-up-content" style="display: none; width: 50%; height:53% ; margin-top: 25px;">
+    <div style="text-align: right; margin-bottom: 10px;">
+        <span style="cursor: pointer; color:blue;" onclick="closeManageAccPopUp()">✖</span>
+    </div>
+    <h1 style="text-align: center;">
+        Manage Accounts
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+    <br>
+    <hr>
+    <br>
+    <div style="text-align: center; margin-top: 10px;">
+        <a href="{% url 'add_proxy' %}" style="text-decoration: none;">
+            <button style="background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; width: 25%; font-family: var(--font-family-sans-serif);">ADD ACCOUNTS LIST</button>
+        </a>
+        <br>
+
+        <a href="{% url 'available_proxies' %}" style="text-decoration: none;">
+            <button style="background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; width: 25%; font-family: var(--font-family-sans-serif);">VIEW ACCOUNT DETAILS</button>
+        </a>
+        <br>
+
+        <a href="{% url 'index2' %}" style="text-decoration: none;">
+            <button style="background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; width: 25%; font-family: var(--font-family-sans-serif);">ASSIGN ACCOUNTS</button>
+        </a>
+        <br>
+
+        <a href="{% url 'index2' %}" style="text-decoration: none;">
+            <button style="background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; width: 25%; font-family: var(--font-family-sans-serif);">DISABLED ACCOUNTS</button>
+        </a>
+        <br>
+    </div>
+</div>
+
+<div id="manage-list-pop-up" class="poppy-up-content" style="display: none; width: 50%; height:53%; margin-top: 25px;">
+    <div style="text-align: right; margin-bottom: 10px;">
+        <span style="cursor: pointer; color:blue;" onclick="closeManageListPopUp()">✖</span>
+    </div>
+    <h1 style="text-align: center;">
+        Manage Lists
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+    <br>
+    <hr>
+    <br>
+    <div style="text-align: center; margin-top: 10px;">
+        <a href="{% url 'available_proxies' %}" style="text-decoration: none;">
+            <button style="background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; width: 25%; font-family: var(--font-family-sans-serif);">SCRAPER LIST</button>
+        </a>
+        <br>
+
+        <a href="{% url 'available_proxies' %}" style="text-decoration: none;">
+            <button style="background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; width: 25%; font-family: var(--font-family-sans-serif);">FOLLOW BLACKLIST</button>
+        </a>
+        <br>
+
+        <a href="{% url 'index2' %}" style="text-decoration: none;">
+            <button style="background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; width: 25%; font-family: var(--font-family-sans-serif);">UNFOLLOW BLACKLIST</button>
+        </a>
+        <br>
+    </div>
+</div>
+
+<div id="manage-tasks-pop-up" class="poppy-up-content" style="display: none; width: 50%; height:68%; margin-top: 5%;">
+    <div style="text-align: right; margin-bottom: 10px;">
+        <span style="cursor: pointer; color:blue;" onclick="closeManageTasksPopUp()">✖</span>
+    </div>
+    <h1 style="text-align: center;">
+        Task Settings
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+    <div style="text-align: center; margin-top: 10px;">
+
+        <label for="in_sec">Global Time between tasks</label>
+        <input style="width: 10%; height: 3%" type="number" id="in_sec" name="task" value="in_sec" placeholder="in_sec">
+
+        <br>
+        <a>
+            <button style="width: 35%; background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; font-family: var(--font-family-sans-serif);" onclick="openScrapeSettingsPopUp()">SCRAPE SETTINGS</button>
+        </a>
+        <br>
+
+        <a>
+            <button style="width: 35%; background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; font-family: var(--font-family-sans-serif);" onclick="openFollowSettingsPopUp()">FOLLOW SETTINGS</button>
+        </a>
+        <br>
+
+        <a>
+            <button style="width: 35%; background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; font-family: var(--font-family-sans-serif);" onclick="openUnfollowSettingsPopUp()">UNFOLLOW SETTINGS</button>
+        </a>
+        <br>
+
+        <a>
+            <button style="width: 35%; background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; font-family: var(--font-family-sans-serif);" onclick="openDMSettingsPopUp()">DM SETTINGS</button>
+        </a>
+        <br>
+
+        <a>
+            <button style="width: 35%; background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; font-family: var(--font-family-sans-serif);" onclick="openDVSettingsPopUp()">DV SETTINGS</button>
+        </a>
+        <br>
+
+        <a>
+            <button style="width: 35%; background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; font-family: var(--font-family-sans-serif);" onclick="openFavoriteSettingsPopUp()">FAVORITE SETTINGS</button>
+        </a>
+        <br>
+
+        <a>
+            <button style="width: 35%; background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; font-family: var(--font-family-sans-serif);" onclick="openCommentSettingsPopUp()">COMMENT SETTINGS</button>
+        </a>
+        <br>
+
+        <a>
+            <button style="width: 35%; background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; font-family: var(--font-family-sans-serif);" onclick="openRepostSettingsPopUp()">REPOST SETTINGS</button>
+        </a>
+        <br>
+
+        <a> 
+        <button style="width: 35%; background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; font-family: var(--font-family-sans-serif);" onclick="openPostSettingsPopUp()">POST SETTINGS</button>
+        </a>
+        <br>
+
+        <a>
+            <button style="width: 35%; background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; font-family: var(--font-family-sans-serif);" onclick="openShareSettingsPopUp()">SHARE TO STORY SETTINGS</button>
+        </a>
+    </div>
+</div>
+
+<div id="manage-device-pop-up" class="poppy-up-content" style="display: none; width: 50%; height:53%; margin-top: 25px;">
+    <div style="text-align: right; margin-bottom: 10px;">
+        <span style="cursor: pointer; color:blue;" onclick="closeManageDevicePopUp()">✖</span>
+    </div>
+    <h1 style="text-align: center;">
+        Manage Device
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+    <table class="device-details-table">
+        <thead>
+            <tr>
+                <th style="width: 50%;">DEVICE</th>
+                <th style="width: 50%;">ASSIGN INSTAGRAM ACCOUNTS</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for brand_info in brand_info_list %}
+                <tr class="brand-row">
+                    <td style="color: #5a5c69; width: 50%;">{{ brand_info.count }} - {{ brand_info.brand }}</td>
+                    <td> 
+                        <a href="{% url 'index2' %}" style="text-decoration: none;">
+                            <button style="background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; font-family: var(--font-family-sans-serif); width: 35%;">Add Account</button>
+                        </a>
+            
+                        <a href="{% url 'index2' %}" style="text-decoration: none;">
+                            <button style="background-color: #4E73DF; color: #ffffff; padding: 6px 12px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; font-family: var(--font-family-sans-serif); width: 35%;">Remove Account</button>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>    
+</div>
+
+<div id="manage-scheduler-pop-up" class="poppy-up-content" style="display: none; width: 50%; height:64%; margin-top: 4.1%;">
+    <div style="text-align: right; margin-bottom: 10px;">
+        <span style="cursor: pointer; color:blue;" onclick="closeSchedulerPopUp()">✖</span>
+    </div>
+    <h1 style="text-align: center;">
+        Scheduler
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+    <br>
+    <hr>
+    <br>
+    <div style="text-align: left; margin-top: 10px; margin-left: 15%;">
+        <label style="width: 40%; display: inline-block;" for="in_min">Time Between Runs</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="in_min" name="task" value="in_min" placeholder="in_min">
+
+        <br>
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="share" name="share" value="share">
+            <label style="font-size: 16px; width: 40%;" for="share">Share to Story</label>
+        </div>
+    </div>
+</div>
+
+<div id="manage-post-settings-pop-up" class="poppy-up-content" style="display: none; width: 50%; height:68%; margin-top: 5%;">
+    <div style="text-align: right; margin-bottom: 10px;">
+        <span style="cursor: pointer; color:blue;" onclick="closePostSettingsPopUp()">✖</span>
+    </div>
+    <h1 style="text-align: center;">
+        Post Settings
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+    <br>
+    <hr>
+    <br>
+    <div style="text-align: left; margin-top: 10px; margin-left: 15%;">
+        <label style="width: 40%; display: inline-block;" for="per_acc">Daily post limit per account</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="per_acc" name="per_acc" value="per_acc" placeholder="per_acc">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="limit">Post daily limit</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="limit" name="limit" value="limit" placeholder="limit">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="per_run">Post limit per run</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="per_run" name="per_run" value="per_run" placeholder="per_run">
+        
+        <br>
+        <label style="width: 40%; display: inline-block;" for="delay_post">Delay between posts</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size: 16px; width: 38%;" for="post_timeline">Global post to timeline</label>
+            <button style="background-color: #4E73DF; color: #ffffff; padding: 4px 10px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; width: 40%; height: 3%; font-family: var(--font-family-sans-serif);">UPLOAD VIDEO</button>
+        </div>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size: 16px; width: 38%;" for="post_timeline">Global post to story</label>
+            <button style="background-color: #4E73DF; color: #ffffff; padding: 4px 10px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; width: 40%; height: 3%; font-family: var(--font-family-sans-serif);">UPLOAD PHOTO/VIDEO</button>
+        </div>
+        <br>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size: 16px; width: 38%;" for="post_timeline">Post content to timeline</label>
+            <button style="background-color: #4E73DF; color: #ffffff; padding: 4px 10px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; width: 40%; height: 3%; font-family: var(--font-family-sans-serif);">MANAGE CONTENT</button>
+        </div>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size:16px; width: 40%;" for="post_timeline">Don't post posted content</label>
+        </div>
+        <br>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size: 16px; width: 38%;" for="post_timeline">Post content folder to story</label>
+            <button style="background-color: #4E73DF; color: #ffffff; padding: 4px 10px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; width: 40%; height: 3%; font-family: var(--font-family-sans-serif);">MANAGE CONTENT</button>
+        </div>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size:16px; width: 40%;" for="post_timeline">Don't post posted content</label>
+        </div>
+    </div>
+</div>
+
+<div id="manage-scrape-settings-pop-up" class="poppy-up-content" style="display: none; width: 50%; height:68%; margin-top: 5%;">
+    <div style="text-align: right; margin-bottom: 10px;">
+        <span style="cursor: pointer; color:blue;" onclick="closeScrapeSettingsPopUp()">✖</span>
+    </div>
+    <h1 style="text-align: center;">
+        Scrape Settings
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+    <br>
+    <hr>
+    <br>
+    <div style="text-align: left; margin-top: 10px; margin-left: 15%;">
+        <label style="width: 40%; display: inline-block;" for="per_acc">Overall daily scrape limit</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="per_acc" name="per_acc" value="per_acc" placeholder="per_acc">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="limit">Daily scrape limit per account</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="limit" name="limit" value="limit" placeholder="limit">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="per_run">Delay between scrape</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="per_run" name="per_run" value="per_run" placeholder="per_run">
+        
+        <br>
+        <label style="width: 40%; display: inline-block;" for="delay_post">Scrape limit per account</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size: 16px; width: 38%;" for="post_timeline">Scrape followers of users</label>
+            <button style="background-color: #4E73DF; color: #ffffff; padding: 4px 10px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; width: 40%; height: 3%; font-family: var(--font-family-sans-serif);">MANAGE LIST</button>
+        </div>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size:16px; width: 40%;" for="post_timeline">Scrape only top results</label>
+        </div>
+        <br>
+
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size: 16px; width: 38%;" for="post_timeline">Scrape by keyword/hashtag</label>
+            <button style="background-color: #4E73DF; color: #ffffff; padding: 4px 10px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; width: 40%; height: 3%; font-family: var(--font-family-sans-serif);">MANAGE LIST</button>
+        </div>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size:16px; width: 40%;" for="post_timeline">Scrape only top results</label>
+        </div>
+        <br>
+
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size: 16px; width: 38%;" for="post_timeline">Scrape users by location</label>
+            <button style="background-color: #4E73DF; color: #ffffff; padding: 4px 10px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; width: 40%; height: 3%; font-family: var(--font-family-sans-serif);">MANAGE LIST</button>
+        </div>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size:16px; width: 40%;" for="post_timeline">Scrape only top results</label>
+        </div>
+    </div>
+</div>
+
+<div id="manage-follow-settings-pop-up" class="poppy-up-content" style="display: none; width: 50%; height:68%; margin-top: 5%;">
+    <div style="text-align: right; margin-bottom: 10px;">
+        <span style="cursor: pointer; color:blue;" onclick="closeFollowSettingsPopUp()">✖</span>
+    </div>
+    <h1 style="text-align: center;">
+        Follow Settings
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+    <br>
+    <hr>
+    <br>
+    <div style="text-align: left; margin-top: 10px; margin-left: 15%;">
+        <label style="width: 40%; display: inline-block;" for="limit">Daily follow limit per account</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="limit" name="limit" value="limit" placeholder="limit">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="per_acc">Overall daily follow limit</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="per_acc" name="per_acc" value="per_acc" placeholder="per_acc">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="per_run">Delay between follows</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="per_run" name="per_run" value="per_run" placeholder="per_run">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="delay_post">Follow limit per run</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+        <br>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size:16px; width: 40%;" for="post_timeline">Post content to timeline</label>
+            <input style="width: 42%; height: 3%; margin-right: 19%;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+        </div>
+    </div>
+</div>
+
+<div id="manage-unfollow-settings-pop-up" class="poppy-up-content" style="display: none; width: 50%; height:68%; margin-top: 5%;">
+    <div style="text-align: right; margin-bottom: 10px;">
+        <span style="cursor: pointer; color:blue;" onclick="closeUnfollowSettingsPopUp()">✖</span>
+    </div>
+    <h1 style="text-align: center;">
+        Unfollow Settings
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+    <br>
+    <hr>
+    <br>
+    <div style="text-align: left; margin-top: 10px; margin-left: 15%;">
+        <label style="width: 40%; display: inline-block;" for="limit">Overall daily unfollow limit</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="limit" name="limit" value="limit" placeholder="limit">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="per_acc">Daily unfollow limit per account</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="per_acc" name="per_acc" value="per_acc" placeholder="per_acc">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="per_run">Delay between Unfollows</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="per_run" name="per_run" value="per_run" placeholder="per_run">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="delay_post">Unfollow limit per run</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+        <br>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size:16px; width: 40%;" for="post_timeline">following number reaches till</label>
+            <input style="width: 42%; height: 3%; margin-right: 19%;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+        </div>
+    </div>
+</div>
+
+<div id="manage-dm-settings-pop-up" class="poppy-up-content" style="display: none; width: 50%; height:68%; margin-top: 5%;">
+    <div style="text-align: right; margin-bottom: 10px;">
+        <span style="cursor: pointer; color:blue;" onclick="closeDMSettingsPopUp()">✖</span>
+    </div>
+    <h1 style="text-align: center;">
+        DM Settings
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+    <br>
+    <hr>
+    <br>
+    <div style="text-align: left; margin-top: 10px; margin-left: 15%;">
+        <label style="width: 40%; display: inline-block;" for="limit">DM daily limit</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="limit" name="limit" value="limit" placeholder="limit">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="per_acc">Daily DM limit per account</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="per_acc" name="per_acc" value="per_acc" placeholder="per_acc">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="per_run">Delay between DMs</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="per_run" name="per_run" value="per_run" placeholder="per_run">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="delay_post">DM limit per run</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+        <br>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size: 16px; width: 40%;" for="post_timeline">Global DM to post</label>
+            <input style="width: 42%; height: 3%; margin-right: 19%" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+        </div>
+    </div>
+</div>
+
+
+<div id="manage-dv-settings-pop-up" class="poppy-up-content" style="display: none; width: 50%; height:68%; margin-top: 5%;">
+    <div style="text-align: right; margin-bottom: 10px;">
+        <span style="cursor: pointer; color:blue;" onclick="closeDVSettingsPopUp()">✖</span>
+    </div>
+    <h1 style="text-align: center;">
+        DV Settings
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+    <br>
+    <hr>
+    <br>
+    <div style="text-align: left; margin-top: 10px; margin-left: 15%;">
+        <label style="width: 40%; display: inline-block;" for="limit">DV daily limit</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="limit" name="limit" value="limit" placeholder="limit">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="per_acc">Daily DV limit per account</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="per_acc" name="per_acc" value="per_acc" placeholder="per_acc">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="per_run">Delay between DVs</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="per_run" name="per_run" value="per_run" placeholder="per_run">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="delay_post">DV limit per run</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+        <br>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size:16px; width: 40%;" for="post_timeline">Global DV to post</label>
+            <input style="width: 42%; height: 3%; margin-right: 19%;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+        </div>
+    </div>
+</div>
+
+<div id="manage-repost-settings-pop-up" class="poppy-up-content" style="display: none; width: 50%; height:68%; margin-top: 5%;">
+    <div style="text-align: right; margin-bottom: 10px;">
+        <span style="cursor: pointer; color:blue;" onclick="closeRepostSettingsPopUp()">✖</span>
+    </div>
+    <h1 style="text-align: center;">
+        Repost Settings
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+    <br>
+    <hr>
+    <br>
+    <div style="text-align: left; margin-top: 10px; margin-left: 15%;">
+        <label style="width: 40%; display: inline-block;" for="limit">Repost daily limit</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="limit" name="limit" value="limit" placeholder="limit">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="per_acc">Daily repost limit per account</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="per_acc" name="per_acc" value="per_acc" placeholder="per_acc">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="per_run">Delay between reposts</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="per_run" name="per_run" value="per_run" placeholder="per_run">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="delay_post">Repost limit per run</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+        <br>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size:16px; width: 40%;" for="post_timeline">Global post to repost</label>
+            <input style="width: 42%; height: 3%; margin-right: 19%;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+        </div>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size:16px; width: 40%;" for="post_timeline">Repost most recent posts</label>
+            <input style="width: 42%; height: 3%; margin-right: 19%;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+        </div>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <label style="width: 0%; display: inline-block; font-size: 16px;" for="post_timeline">Top</label>
+            <input style="width: 26%; height: 3%; display: inline-block; margin-left: 5%;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+            <label style="width: 0%; display: inline-block; margin-left: 1%; font-size: 16px;" for="post_timeline">posts</label>
+        </div>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size:16px; width: 40%;" for="post_timeline">Don't post posted content</label>
+            <input style="width: 42%; height: 3%; margin-right: 19%;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+        </div>
+    </div>
+</div>
+
+<div id="manage-share-settings-pop-up" class="poppy-up-content" style="display: none; width: 50%; height:68%; margin-top: 5%;">
+    <div style="text-align: right; margin-bottom: 10px;">
+        <span style="cursor: pointer; color:blue;" onclick="closeShareSettingsPopUp()">✖</span>
+    </div>
+    <h1 style="text-align: center;">
+        Share to story Settings
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+    <br>
+    <hr>
+    <br>
+    <div style="text-align: left; margin-top: 10px; margin-left: 15%;">
+        <label style="width: 40%; display: inline-block;" for="limit">Share to story daily limit</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="limit" name="limit" value="limit" placeholder="limit">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="per_acc">Daily share limit per account</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="per_acc" name="per_acc" value="per_acc" placeholder="per_acc">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="per_run">Delay between share to stories</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="per_run" name="per_run" value="per_run" placeholder="per_run">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="delay_post">Share to story limit per run</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+        <br>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size:16px; width: 40%;" for="post_timeline">Global post to share to story</label>
+            <input style="width: 42%; height: 3%; margin-right: 19%;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+        </div>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size:16px; width: 40%;" for="post_timeline">Share to story recent posts</label>
+            <input style="width: 42%; height: 3%; margin-right: 19%;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+        </div>
+        
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <label style="width: 0%; display: inline-block; font-size: 16px;" for="post_timeline">Top</label>
+            <input style="width: 26%; height: 3%; display: inline-block; margin-left: 5%;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+            <label style="width: 0%; display: inline-block; margin-left: 1%; font-size: 16px;" for="post_timeline">posts</label>
+        </div>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size:16px; width: 40%;" for="post_timeline">Don't share previous story</label>
+        </div>
+    </div>
+</div>
+
+<div id="manage-favorite-settings-pop-up" class="poppy-up-content" style="display: none; width: 50%; height:68%; margin-top: 5%;">
+    <div style="text-align: right; margin-bottom: 10px;">
+        <span style="cursor: pointer; color:blue;" onclick="closeFavoriteSettingsPopUp()">✖</span>
+    </div>
+    <h1 style="text-align: center;">
+        Favorite Settings
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+    <br>
+    <hr>
+    <br>
+    <div style="text-align: left; margin-top: 10px; margin-left: 15%;">
+        <label style="width: 40%; display: inline-block;" for="limit">Favorite daily limit</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="limit" name="limit" value="limit" placeholder="limit">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="per_acc">Daily favorite limit per account</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="per_acc" name="per_acc" value="per_acc" placeholder="per_acc">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="per_run">Delay between favorites</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="per_run" name="per_run" value="per_run" placeholder="per_run">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="delay_post">favorite limit per run</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+        <br>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size:16px; width: 40%;" for="post_timeline">Global post to favorite</label>
+            <input style="width: 42%; height: 3%; margin-right: 19%;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+        </div>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size:16px; width: 40%;" for="post_timeline">Favorite most recent posts</label>
+            <input style="width: 42%; height: 3%; margin-right: 19%;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+        </div>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <label style="width: 0%; display: inline-block; font-size: 16px;" for="post_timeline">Top</label>
+            <input style="width: 27%; height: 3%; display: inline-block; margin-left: 5%;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+            <label style="width: 0%; display: inline-block; margin-left: 1%; font-size: 16px;" for="post_timeline">posts</label>
+        </div>
+    </div>
+</div>
+
+<div id="manage-comment-settings-pop-up" class="poppy-up-content" style="display: none; width: 50%; height:68%; margin-top: 5%;">
+    <div style="text-align: right; margin-bottom: 10px;">
+        <span style="cursor: pointer; color:blue;" onclick="closeCommentSettingsPopUp()">✖</span>
+    </div>
+    <h1 style="text-align: center;">
+        Comments Settings
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+    <br>
+    <hr>
+    <br>
+    <div style="text-align: left; margin-top: 10px; margin-left: 15%;">
+        <label style="width: 40%; display: inline-block;" for="limit">Comment daily limit</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="limit" name="limit" value="limit" placeholder="limit">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="per_acc">Daily comment limit per account</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="per_acc" name="per_acc" value="per_acc" placeholder="per_acc">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="per_run">Delay between comments</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="per_run" name="per_run" value="per_run" placeholder="per_run">
+        <br>
+
+        <label style="width: 40%; display: inline-block;" for="delay_post">Comment limit per run</label>
+        <input style="width: 40%; height: 3%; display: inline-block;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+        <br>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size:16px; width: 40%;" for="post_timeline">Global post to comment on</label>
+            <input style="width: 42%; height: 3%; margin-right: 19%;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+        </div>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size:16px; width: 40%;" for="post_timeline">Comment on most recent posts</label>
+            <input style="width: 42%; height: 3%; margin-right: 19%;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+        </div>
+
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <label style="width: 0%; display: inline-block; font-size: 16px;" for="post_timeline">Top</label>
+            <input style="width: 25%; height: 3%; display: inline-block; margin-left: 5%;" type="number" id="delay_post" name="delay_post" value="delay_post" placeholder="in_sec">
+            <label style="width: 0%; display: inline-block; margin-left: 1%; font-size: 16px;" for="post_timeline">posts</label>
+        </div>
+
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size: 16px; width: 38%;" for="post_timeline">Global comment list</label>
+            <button style="background-color: #4E73DF; color: #ffffff; padding: 4px 10px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin-top: 1%; width: 40%; height: 3%; font-family: var(--font-family-sans-serif);">MANAGE</button>
+        </div>
+        
+        <div style="margin-left: 0%;" class="checkbox-container">
+            <input type="checkbox" id="post_timeline" name="post_timeline" value="post_timeline">
+            <label style="font-size:16px; width: 40%;" for="post_timeline">Don't post same comment</label>
+        </div>
+    </div>
+</div>
+{% endblock %}

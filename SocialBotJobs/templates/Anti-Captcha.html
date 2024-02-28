@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="header-container">
+  <h1>
+    Anti-Captcha
+    <span class="info-link">
+      <a href="#">info</a>
+    </span>
+  </h1>
+</div>
+<br>
+<div class="settings-container">
+  <form id="apiKeyForm">
+    <label for="anticaptchaApiKey">Anti Captcha API Key</label><br><br>
+    <input type="text" id="anticaptchaApiKey" name="anticaptchaApiKey" placeholder="Enter your Anti Captcha API key"
+      required>
+    <br><br>
+    <label for="anticaptchaApiKey">Anti Captcha API Secret</label><br><br>
+    <input type="text" id="anticaptchaApiKey" name="anticaptchaApiKey" placeholder="Anti Captcha API Secret" required>
+    <button class="save-btn" type="button" onclick="saveApiKey()">Save</button>
+  </form>
+</div>
+<!--
+        <div class="containers">
+            <div class="box1">
+            </div>
+            <div class="box2">
+            </div>
+          -->
+</div>
+{% endblock %}

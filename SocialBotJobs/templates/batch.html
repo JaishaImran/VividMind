@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="header-container">
+    <h1>
+        Profile Batch
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+</div>
+
+<table class="proxy-details-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Batch Name</th>
+            <th>Created</th>
+            <th>Total Profiles</th>
+            <th>Total Profiles Run</th>
+            <th>Healthy</th>
+            <th>Disabled</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for batch_instance in batch %}
+        <tr class="batch-row">
+            <td style="color: #5a5c69;">{{ batch_instance.id }}</td>
+            <td style="color: #5a5c69;">{{ batch_instance.name }}</td>
+            <td style="color: #5a5c69;">{{ batch_instance.created }}</td>
+            <td style="color: #5a5c69;">{{ batch_instance.total_profiles }}</td>
+            <td style="color: #5a5c69;">{{ batch_instance.total_profiles_run }}</td>
+            <td style="color: #5a5c69;">{{ batch_instance.healthy }}</td>
+            <td style="color: #5a5c69;">{{ batch_instance.disabled }}</td>
+            <td>
+                <a href="{% url 'delete_proxy' proxies_instance.id %}" class="delete-bot-btn"
+                    style="align-content: center;">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="pagination">
+    <span style="color: #5a5c69;">Pages</span>
+    <ul class="page-links">
+        {% if proxies.has_previous %}
+        <li><a href="?page=1">&laquo; first</a></li>
+        <li><a href="?page={{ proxies.previous_page_number }}">previous</a></li>
+        {% endif %}
+
+        {% for num in proxies.paginator.page_range %}
+        <li {% if num == proxies.number %}class="current-page"{% endif %}>
+            <a href="?page={{ num }}">{{ num }}</a>
+        </li>
+        {% endfor %}
+
+        {% if proxies.has_next %}
+        <li><a href="?page={{ proxies.next_page_number }}">next</a></li>
+        <li><a href="?page={{ proxies.paginator.num_pages }}">last &raquo;</a></li>
+        {% endif %}
+    </ul>
+
+    <div class="go-to">
+        <span style="color: #5a5c69;">Go to</span>
+        <input type="number" min="1" max="{{ proxies.paginator.num_pages }}" value="{{ proxies.number }}"
+            oninput="goToPage(this.value)" />
+    </div>
+</div>
+</div>
+{% endblock %}

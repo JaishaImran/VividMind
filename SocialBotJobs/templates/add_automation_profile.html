@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<script>
+    function showLoader() {
+        document.body.classList.add('loading');
+        document.getElementById('loaderContainer').style.display = 'flex';
+    }
+</script>
+
+<div class="header-container">
+    <h1>Add Automation Profiles<span class="info-link"><a href="#"> info </a></span></h1>
+    <button class="generate-report-btn" onclick="openPopup('addProxiesPopup')">
+        <i class='bx bx-plus-circle'></i> Upload Profiles
+    </button>
+</div>
+
+<div class="settings-container">
+    <form method="post">
+        {% csrf_token %}
+        
+        <label for="id_action">Action</label>
+        <input type="text" name="action" id="id_action" required>
+    
+        <label for="id_spreadsheet_url">Spreadsheet URL</label>
+        <input type="text" name="spreadsheet_url" id="id_spreadsheet_url" required>
+    
+        <label for="id_resource_type">Resource Type</label>
+        <input type="text" name="resource_type" id="id_resource_type" required>
+    
+        <button type="submit">Submit</button>
+    </form>    
+</div>
+
+<div class="settings-container">
+    <div id="addProxiesPopup" class="popup">
+        <div class="popup-content">
+            <span style="color: blue; font-size: 25px;" class="popup-close" onclick="closePopup('addProxiesPopup')">&times;</span>
+            <h2>
+                Upload Profiles
+                <span class="info-link">
+                    <a href="#">info</a>
+                </span>
+            </h2>
+            <br>
+            <hr>
+            <br>
+            <form id="uploadForm" method="post" action="{% url 'add_profile_via_excel_sheet' %}" onsubmit="showLoader()">
+                {% csrf_token %}
+                <label for="google_sheets_url">Google Sheets URL</label>
+                <input type="text" name="google_sheets_url" required>
+                <button class="generate-report-btn" type="submit" name="add_proxies">Upload</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% if main_info_list %}
+  <ul>
+    {% for info in main_info_list %}
+      <li>Username: {{ info.username }}, Message: {{ info.message }}</li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No main information available.</p>
+{% endif %}
+
+<div id="loaderContainer" class="loader-container">
+    <div class="loader"></div>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "vividmind-408110",
+  "private_key_id": "57338752d2368cf17a1d5cff499f9660fb3e903b",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQC8khzIEydZx2zh\n15HxtE7Y47A5JAZOao0T1+N8DoBj/pxM3EMuYmW1ImWPTRDPLL/ey6LgiRlJMiqA\n3A7NEyzz6rtfzftlx3GLwt+zqszO87GQO1F+Ur4+6N7yk1G1/3IdRTcHxq+AwNbb\n4b0Go27wYt7thN9C9JA1O1pZ8No0hCaQUv9wvu6v7A6Pe6sGAnyZCX01FylOcNdp\nKkI5XKoQnWE4B3zE0Qc/4yWcc8lIJYAmmFA4WRnZfaEpWWUfz3pNxXoa9E688iqA\nLwhiAdQxzqqrZFGhodTz7QYZ875T55kgcYRgQzUTUzDVLlyHq6rQb0LF5S1+Gki1\nzlcF4Cw/AgMBAAECggEANkgzO87zsW7sY3isHPFkDyA//rrli9Y1RUSMyg3cnKxS\n7vcq6aPOll1P8ffjwlel5esluFAO9NiZjp2KLzN5ab+k75e6ahqHD43p2mzs5xgU\nganptBz6gd6EKz0INQVTIqTlifoCVGRulT4+rTYHvfAgLyxkHoCLMJ+kyyY/kgUH\nu4SILY5Z0fpYgLY2YxPKENtCP+2G9mAnPuDTIubSs/aSYSsoLL0Ejb/GPXHEad6g\nh0rDHOSf/I491gd+BZnoHAbCfGqDk0rQ/rBOwTbP3ioPXyGL95UqaancmhSi97bg\n0fJzZNHKdB48FgDSP/Ang7Uo3CUn0v4STCLe8Y7/8QKBgQDtVvNHGuzcex0GDBTc\nnLUSq1rMjK/EMOdgXxk1+z8INqPDihxiU4DoLzz2lo2KPA156yn1nlgootKOrGHX\npADMT7CYTj+LOCdkPo9ny7AjovgycRLprdoci57UWVuXIqhXxIWEzjUSKKgFTm+F\nd2MK4JPRJZafBvDAi54QSDlHMQKBgQDLZZElK5BjcaICVNx5mLS2JdDl4DZlaJAB\nBBvIAsoU92ypkC4GTL1qNe11eyDZYYBSoYMmnSDW7S9bu+RpbzA+RhIiTQ/z2ZkA\n5d4cJWy57Z3bLrzBRfohytobvjPtIuD6osy8XNo/r45n+61dmOl19ffPe+YmvIFK\nT6OHpVeubwKBgQCY9pcoVqQdnYMhKJwxaxYQiDum5W1KprIYnHHlJp6DLqPxHIwa\nmvLTsc46puFmHDobP4L1eC4dUoMdzN/qWRrikuGf555wnapVozRNkytcbGZGLDYi\nQRf3mcyt00GCcKXKmy/qXfQ6VdWkRd7+R+mfUwoxm2Yt7A0yK0md+M5hoQKBgQCy\n+AHJFRYNinUlXApLrESGaavwOWNjw6fCXR0c1ud9n2CrqsP0ox2gESeKUfdLj3Fc\nQ+Wk2mmE9FrRevi2lTF7+igGqow44uSwV5MibQPIbf6SWAOahLpddaKI+smyBRi1\nMP65V3Jqy0ygzmFzlBMIyo9sr/aJayDQhFa+CoymXQKBgQCnh+qaOrDMfV993Xex\nAAywKJHsjs68CRbj6ijdw7FrcyC6Wxiaq29+Y716RNGpMH7fM6JhfIU2N1uspgnQ\n4axZB32i9VwkTe66NpxuB8+7PnFgXvhfWLe6WlQ9SoGM4/L05uKTqXV5YAkBhsVL\nH1qLxbrrJ/F6o6Q39jNWMp/2sw==\n-----END PRIVATE KEY-----\n",
+  "client_email": "vivid-mind@vividmind-408110.iam.gserviceaccount.com",
+  "client_id": "111917400028045155955",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/vivid-mind%40vividmind-408110.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

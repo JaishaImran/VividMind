@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="header-container">
+    <h1>
+        Add New Proxy
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+    <button class="generate-report-btn" onclick="openPopup('addProxiesPopup')">
+        <i class='bx bx-plus-circle'></i> Upload Proxies
+    </button>
+</div>
+<div class="settings-container">
+    <form method="post">
+        {% csrf_token %}
+        
+        <label for="id_action">Action</label>
+        <input type="text" name="action" id="id_action" required>
+    
+        <label for="id_spreadsheet_url">Spreadsheet URL</label>
+        <input type="text" name="spreadsheet_url" id="id_spreadsheet_url" required>
+    
+        <label for="id_resource_type">Resource Type</label>
+        <input type="text" name="resource_type" id="id_resource_type" required>
+    
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var ProxyForm = document.querySelector("#ProxyForm");
+
+        ProxyForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            var formData = new FormData(ProxyForm);
+            formData.append('csrfmiddlewaretoken', document.getElementsByName('csrfmiddlewaretoken')[0].value);
+
+            console.log(Object.fromEntries(formData));
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "{% url 'add_proxy' %}", true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        console.log('Success:', xhr.responseText);
+                        window.location.href = "{% url 'available_proxies' %}";
+                    } else {
+                        console.error('Error:', xhr.status, xhr.statusText);
+                    }                    
+                }
+            };
+
+            xhr.send(formData);
+        });
+    });
+</script>
+
+<div class="settings-container">
+    <div id="addProxiesPopup" class="popup">
+        <div class="popup-content">
+            <span style="color: blue; font-size: 25px;" class="popup-close" onclick="closePopup('addProxiesPopup')">&times;</span>
+            <h2>
+                Upload Proxies
+                <span class="info-link">
+                    <a href="#">info</a>
+                </span>
+            </h2>
+            <br>
+            <hr>
+            <br>
+            <form method="post" action="{% url 'add_profile_via_excel_sheet' %}">
+                {% csrf_token %}
+                <label for="google_sheets_url">Google Sheets URL</label>
+                <input type="text" name="google_sheets_url" required>
+                <button class="generate-report-btn" type="submit" name="add_proxies">Upload</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

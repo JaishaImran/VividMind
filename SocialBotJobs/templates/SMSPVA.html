@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="header-container">
+  <h1>
+    SMSPVA
+    <span class="info-link">
+      <a href="#">info</a>
+    </span>
+  </h1>
+</div>
+<br>
+<div class="settings-container">
+  <form id="apiKeyForm">
+    <label for="smspvaApiKey">SMSPVA API Key</label><br><br>
+    <input type="text" id="smspvaApiKey" name="smspvaApiKey" placeholder="Enter your SMSPVA API key" required>
+    <br>
+    <button class="save-btn" type="button" onclick="saveApiKey()">Save</button>
+  </form>
+</div>
+</div>
+{% endblock %}

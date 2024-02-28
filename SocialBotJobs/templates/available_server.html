@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="header-container">
+    <h1>
+        Server
+        <span class="info-link">
+            <a href="#">info</a>
+        </span>
+    </h1>
+    <a style="margin-left: 65%;"> 
+        <button class="active-profile-btn">
+            Active Server <span class="notification-badge">{{ server|length }}</span>
+        </button>
+    </a>
+</div>
+
+<table class="proxy-details-table">
+    <thead>
+        <tr>
+            <th>Server Name</th>
+            <th>Instance Id</th>
+            <th>State</th>
+            <th>Created</th>
+            <th>Instance Type</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for server in servers %}
+            <tr>
+                <td>{{ server.name }}</td>
+                <td>{{ server.instance_id }}</td>
+                <td>{{ server.state }}</td>
+                <td>{{ server.created_on }}</td>
+                <td>{{ server.instance_type }}</td>
+                <td>{{ server.online_status }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="pagination">
+    <span style="color: #5a5c69;">Pages</span>
+    <ul class="page-links">
+        {% if server.has_previous %}
+        <li><a href="?page=1">&laquo; first</a></li>
+        <li><a href="?page={{ server.previous_page_number }}">previous</a></li>
+        {% endif %}
+
+        {% for num in server.paginator.page_range %}
+        <li {% if num == server.number %}class="current-page"{% endif %}>
+            <a href="?page={{ num }}">{{ num }}</a>
+        </li>
+        {% endfor %}
+
+        {% if server.has_next %}
+        <li><a href="?page={{ server.next_page_number }}">next</a></li>
+        <li><a href="?page={{ server.paginator.num_pages }}">last &raquo;</a></li>
+        {% endif %}
+    </ul>
+
+    <div class="go-to">
+        <span style="color: #5a5c69;">Go to</span>
+        <input type="number" min="1" max="{{ server.paginator.num_pages }}" value="{{ server.number }}"
+            oninput="goToPage(this.value)" />
+    </div>
+</div>
+</div>
+{% endblock %}
